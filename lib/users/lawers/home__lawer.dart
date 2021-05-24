@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawer/forum/forum.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../userselection.dart';
@@ -62,11 +63,7 @@ class _HomeLawerState extends State<HomeLawer> {
                   "1",
                   style: TextStyle(fontSize: 40),
                 )),
-            Center(
-                child: Text(
-                  "3",
-                  style: TextStyle(fontSize: 40),
-                )),
+           Forum()
           ],
         ),
       ),
