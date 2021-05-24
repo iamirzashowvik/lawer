@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lawer/model/textformfield.dart';
 import 'package:lawer/users/lawers/signin__lawer.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpLawer extends StatefulWidget {
   const SignUpLawer({Key key}) : super(key: key);
@@ -41,6 +44,27 @@ class _SignUpLawerState extends State<SignUpLawer> {
        ));
      }
    });
+  }
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  Future<UserCredential> signInWithGoogleee() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth =
+    await googleUser.authentication;
+
+    // Create a new credential
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+  Future<void> signOutGoogle() async {
+    await googleSignIn.signOut();
   }
   @override
   void initState() {
@@ -93,7 +117,7 @@ class _SignUpLawerState extends State<SignUpLawer> {
                   ),
                 ),
 
-                TFFxM(email, 'Email'),
+
                 TFFxM(password, 'Password'),
                 TFFxM(presentaddress, 'Office Address'),
                 TFFxM(phone, 'Phone Number'),TFFxM(nid, 'NID/Passport/Driving License Number'),
@@ -111,32 +135,54 @@ class _SignUpLawerState extends State<SignUpLawer> {
                         EasyLoading.show(status: 'loading...');
 
 
-                        fireStoreInstance
-                            .collection("Lawer")
-                            .doc(email.text)
-                            .set({
-                          'name': fullName.text, // John Doe
-                          'phn': phone.text, // Stokes and Sons
-                          'password': password.text,
-                          'service': needs.text,
-                          'nid': nid.text,
-                          'OfficeAddress': presentaddress.text,
-                          'email': email.text,
-'barresnumber':brNumber.text,
-                          'education':education.text,
-                          'certifications':certifications.text,
-                          'trainig':training.text,
-                          'others':others.text,
+
+                        signInWithGoogleee().then((result) async {
+                          if (result != null) {
+                            print(
+                                'uid ${result.user.uid} ${result.credential} ${result.additionalUserInfo.providerId}');
+
+                            try {
+                              fireStoreInstance
+                                  .collection("Lawer")
+                                  .doc(result.user.email)
+                                  .set({
+                                'profile': result.additionalUserInfo.profile,
+                                'name': fullName.text, // John Doe
+                                'phn': phone.text, // Stokes and Sons
+                                'password': password.text,
+                                'service': needs.text,
+                                'nid': nid.text,
+                                'OfficeAddress': presentaddress.text,
+                                'email': result.user.email,
+                                'barresnumber':brNumber.text,
+                                'education':education.text,
+                                'certifications':certifications.text,
+                                'trainig':training.text,
+                                'others':others.text,
+'usertype':'Lawer'
+                              }, SetOptions(
+                                  merge: true)).then((_) async {});
+                              SharedPreferences pref =
+                              await SharedPreferences.getInstance();
+                              pref.setString(
+                                  'profilePHOTO', result.user.photoURL);
+                              pref.setString('email', result.user.email);
+                              pref.setString(
+                                  'name', result.user.displayName);
 
 
+                              EasyLoading.dismiss();
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (_) => SignInLawer()));
 
-                          'usertype':'Lawer'
-                        }, SetOptions(merge: true)).then((_) async {
-                          print("success!");
+                            } catch (e) {
+
+                            }
+                          } else {
+                            signOutGoogle();
+                          }
                         });
-                        EasyLoading.dismiss();
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (_) => SignInLawer()));
+
                       } else {
                         //  print("invalid");
                       }

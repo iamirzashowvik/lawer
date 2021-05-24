@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawer/forum/forum.dart';
 import 'package:lawer/users/userselection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -67,7 +68,7 @@ getSharedData()async{
                   "0",
                   style: TextStyle(fontSize: 40),
                 )),
-            ListView.builder(
+           lawers.length==0?CircularProgressIndicator(): ListView.builder(
                 itemCount: lawers.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
@@ -78,43 +79,48 @@ getSharedData()async{
                       width:
                       (MediaQuery.of(context).size.width / 3) * 1.7,
                       child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceAround,
+                        child: Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AutoSizeText(lawers[index]['name'],
-                                  minFontSize: 10,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.visible,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: 'Gilroy',
-                                  )),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AutoSizeText(lawers[index]['email'],
-                                  minFontSize: 10,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.visible,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontFamily: 'Gilroy',
-                                  )),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AutoSizeText(lawers[index]['phn'],
-                                  minFontSize: 10,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.visible,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontFamily: 'Gilroy',
-                                  )),
+                            Image.network('https://image.freepik.com/free-photo/smiling-mature-lawyer-working-courtroom_23-2147898545.jpg',height: 90,width: 90,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceAround,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: AutoSizeText(lawers[index]['name'],
+                                      minFontSize: 10,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.visible,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: 'Gilroy',
+                                      )),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: AutoSizeText(lawers[index]['email'],
+                                      minFontSize: 10,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.visible,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontFamily: 'Gilroy',
+                                      )),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: AutoSizeText(lawers[index]['phn'],
+                                      minFontSize: 10,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.visible,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontFamily: 'Gilroy',
+                                      )),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -122,11 +128,7 @@ getSharedData()async{
                     ),
                   );
                 }),
-            Center(
-                child: Text(
-                  "3",
-                  style: TextStyle(fontSize: 40),
-                )),
+            Forum()
           ],
         ),
       ),
