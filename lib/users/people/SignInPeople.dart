@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawer/model/textformfield.dart';
+import 'package:lawer/users/lawers/home__lawer.dart';
 import 'package:lawer/users/people/home__people.dart';
 import 'package:lawer/users/people/signup__people.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,10 +82,7 @@ class _SignInPeopleState extends State<SignInPeople> {
                                 pref.setString('PresentAddress', userData[i]['PresentAddress']);
                                 pref.setString('nid', userData[i]['nid']);
                                 pref.setString('profilePHOTO', userData[i]['profile']['picture']);
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => HomePeople()));
+                                Get.offAll(HomePeople());
                               } else {}
                             }
                           }
