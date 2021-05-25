@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:lawer/forum/forum.dart';
 import 'package:lawer/users/userselection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:lawer/users/people/LawerDetails.dart';
+import 'conversations/conversations.dart';
 class HomePeople extends StatefulWidget {
   @override
   _HomePeopleState createState() => _HomePeopleState();
@@ -26,6 +27,7 @@ getSharedData()async{
         setState(() {
           lawers.add(dataFF2);
         });
+
       });
     });
         
@@ -52,11 +54,23 @@ getSharedData()async{
               Tab(icon: Text('Forum')),
             ],
           ),actions: [
-            GestureDetector(onTap: () async{
-              SharedPreferences preference=await SharedPreferences.getInstance();
-            preference.setBool('isLogInPeople', false);
-              Get.offAll(UserSelection());
-              },child: Icon(Icons.exit_to_app),)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(onTap: () async{
+
+              Get.to(Conversations());
+            },child: Icon(Icons.message),),
+          ),
+
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GestureDetector(onTap: () async{
+                SharedPreferences preference=await SharedPreferences.getInstance();
+              preference.setBool('isLogInPeople', false);
+                Get.offAll(UserSelection());
+                },child: Icon(Icons.exit_to_app),),
+            )
 
         ],
           title: Text(name),
@@ -68,12 +82,13 @@ getSharedData()async{
                   "0",
                   style: TextStyle(fontSize: 40),
                 )),
-           lawers.length==0?CircularProgressIndicator(): ListView.builder(
+           lawers.length==0?Center(child: CircularProgressIndicator()): ListView.builder(
                 itemCount: lawers.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     onTap: () {
-                      //gg
+                      print(lawers[index]['email']);
+                     Get.to(LawerDetails(lawers[index]['email']));
                     },
                     title: Container(
                       width:
@@ -81,7 +96,7 @@ getSharedData()async{
                       child: Center(
                         child: Row(
                           children: [
-                            Image.network('https://image.freepik.com/free-photo/smiling-mature-lawyer-working-courtroom_23-2147898545.jpg',height: 90,width: 90,),
+                            Image.network(lawers[index]['profile']['picture'],height: 90,width: 90,),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment:

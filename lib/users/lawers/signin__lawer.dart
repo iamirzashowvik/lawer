@@ -21,7 +21,9 @@ class _SignInLawerState extends State<SignInLawer> {
   List<dynamic> userData = [];
 
   getUserData() {
-    var dataFF2;
+    var dataFF2;setState(() {
+      userData = [];
+    });
     firestoreInstance.collection("Lawer").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         dataFF2 = result.data();
@@ -36,9 +38,9 @@ class _SignInLawerState extends State<SignInLawer> {
 
   @override
   void initState() {
-    getUserData();
 
-    super.initState();
+    getUserData();
+    super.initState(); getUserData();
   }
 
   final _loginForm = GlobalKey<FormState>();
@@ -82,10 +84,12 @@ class _SignInLawerState extends State<SignInLawer> {
                                 pref.setString('phn', userData[i]['phn']);
                                 pref.setString('PresentAddress', userData[i]['OfficeAddress']);
                                 pref.setString('nid', userData[i]['nid']);
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => HomeLawer()));
+                                pref.setString('profilePHOTO', userData[i]['profile']['picture']);
+                                // Navigator.pushReplacement(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (_) => HomeLawer()));
+                                Get.offAll(HomeLawer());
                               } else {}
                             }
                           }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lawer/forum/forum.dart';
+import 'package:lawer/users/lawers/conv_lawer/conv_lawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../userselection.dart';
@@ -38,7 +39,7 @@ class _HomeLawerState extends State<HomeLawer> {
             },
             tabs: [
               Tab(icon: Text('Laws')),
-              Tab(icon: Text('Lawers')),
+              Tab(icon: Text('Chats')),
               Tab(icon: Text('Forum')),
             ],
           ),actions: [
@@ -58,11 +59,7 @@ class _HomeLawerState extends State<HomeLawer> {
                   "0",
                   style: TextStyle(fontSize: 40),
                 )),
-            Center(
-                child: Text(
-                  "1",
-                  style: TextStyle(fontSize: 40),
-                )),
+            Conv_lawer(),
            Forum()
           ],
         ),

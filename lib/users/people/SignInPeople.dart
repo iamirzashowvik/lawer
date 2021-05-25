@@ -18,7 +18,9 @@ class _SignInPeopleState extends State<SignInPeople> {
   List<dynamic> userData = [];
 
   getUserData() {
-    var dataFF2;
+    var dataFF2;setState(() {
+      userData = [];
+    });
  firestoreInstance.collection("client").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         dataFF2 = result.data();
@@ -34,7 +36,7 @@ class _SignInPeopleState extends State<SignInPeople> {
   void initState() {
     getUserData();
 
-    super.initState();
+    super.initState();getUserData();
   }
 
   final _loginForm = GlobalKey<FormState>();
@@ -78,6 +80,7 @@ class _SignInPeopleState extends State<SignInPeople> {
                                 pref.setString('phn', userData[i]['phn']);
                                 pref.setString('PresentAddress', userData[i]['PresentAddress']);
                                 pref.setString('nid', userData[i]['nid']);
+                                pref.setString('profilePHOTO', userData[i]['profile']['picture']);
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
