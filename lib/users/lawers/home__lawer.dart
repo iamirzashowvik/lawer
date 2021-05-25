@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:lawer/forum/forum.dart';
 import 'package:lawer/users/lawers/conv_lawer/conv_lawer.dart';
+import 'package:lawer/users/lawers/profilel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../userselection.dart';
@@ -43,14 +45,48 @@ class _HomeLawerState extends State<HomeLawer> {
               Tab(icon: Text('Forum')),
             ],
           ),actions: [
-          GestureDetector(onTap: () async{
-            SharedPreferences preference=await SharedPreferences.getInstance();
-            preference.setBool('isLogInLawer', false);
-            Get.offAll(UserSelection());
-          },child: Icon(Icons.exit_to_app),)
 
         ],
           title: Text(name),
+        ),
+        drawer: Drawer(
+          child: Column(
+            children: [
+              DrawerHeader(),
+              ListTile(
+                onTap: () {
+                  Get.to(ProfileLawer());
+                },
+                title: Row(
+                  children: [
+                    Icon(FontAwesomeIcons.user),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('   Profile'),
+                    )
+                  ],
+                ),
+              ),
+              ListTile(
+                onTap: () async {
+                  SharedPreferences preference =
+                  await SharedPreferences.getInstance();
+                  preference.setBool('isLogInPeople', false);
+                  preference.setBool('isLogInLawer', false);
+                  Get.offAll(UserSelection());
+                },
+                title: Row(
+                  children: [
+                    Icon(FontAwesomeIcons.signOutAlt),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('   Logout'),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
         body: TabBarView(
           children: [

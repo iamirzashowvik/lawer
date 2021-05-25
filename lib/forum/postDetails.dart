@@ -41,6 +41,15 @@ class _PostDetailsState extends State<PostDetails> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar:
+        AppBar( backgroundColor: Colors.white,elevation:0,
+          leading:GestureDetector(onTap: () {
+
+        Get.back();
+      },child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(Icons.arrow_back_ios,color: Colors.black,),
+      ),),title: Text('Comments',style: TextStyle(color: Colors.black),),),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(children: [

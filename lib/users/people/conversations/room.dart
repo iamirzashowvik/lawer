@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lawer/model/textformfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,18 +38,29 @@ getSharedData() async {
     return Scaffold( appBar: AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      leading: photoURL == null
-          ? CircularProgressIndicator()
-          : Padding(
+      leading:GestureDetector(onTap: () {
+
+        Get.back();
+      },child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: CircleAvatar(
-          backgroundImage: NetworkImage(widget.lawerphoto),
-          // radius: 20,
-        ),
-      ),
-      title: Text(
-        widget.lawername,
-        style: TextStyle(color: Colors.black),
+        child: Icon(Icons.arrow_back_ios,color: Colors.black,),
+      ),),
+      title: Row(
+        children: [
+          photoURL == null
+              ? CircularProgressIndicator()
+              : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(widget.lawerphoto),
+              // radius: 20,
+            ),
+          ),
+          Text(
+            widget.lawername,
+            style: TextStyle(color: Colors.black),
+          ),
+        ],
       ),
     ),
       body: StreamBuilder<QuerySnapshot>(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:lawer/users/people/conversations/room.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,18 +38,29 @@ class _ConversationsState extends State<Conversations> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: photoURL == null
-            ? CircularProgressIndicator()
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(photoURL),
-                  // radius: 20,
-                ),
+        leading:GestureDetector(onTap: () {
+
+          Get.back();
+        },child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(Icons.arrow_back_ios,color: Colors.black,),
+        ),),
+        title: Row(mainAxisAlignment:MainAxisAlignment.start ,
+          children: [
+            photoURL == null
+                ? CircularProgressIndicator()
+                : Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(photoURL),
+                // radius: 20,
               ),
-        title: Text(
-          'Chats',
-          style: TextStyle(color: Colors.black),
+            ),
+            Text(
+              'Chats',
+              style: TextStyle(color: Colors.black),
+            ),
+          ],
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -67,8 +79,8 @@ class _ConversationsState extends State<Conversations> {
           // final messages = snapshot.data.docs.reversed;
 
           return ListView.builder(
-            reverse: true,
-            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+             reverse: true,
+            padding: EdgeInsets.all(8),
             itemCount: snapshot.data.docs.length,
             itemBuilder: (BuildContext context, int index) {
               if (snapshot.data.docs[index]['sender_client'] == email) {
@@ -89,7 +101,7 @@ class _ConversationsState extends State<Conversations> {
                             CircleAvatar(
                               backgroundImage: NetworkImage(
                                   snapshot.data.docs[index]['receiver_photo']),
-                              radius: 30,
+                              radius: 20,
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -99,7 +111,7 @@ class _ConversationsState extends State<Conversations> {
                                   Text(
                                     snapshot.data.docs[index]['receiver_name'],
                                     style: TextStyle(
-                                        fontSize: 25,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(snapshot.data.docs[index]['message']),
