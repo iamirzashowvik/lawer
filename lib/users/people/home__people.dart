@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:lawer/forum/forum.dart';
 import 'package:lawer/users/people/profilepeople.dart';
 import 'package:lawer/users/userselection.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lawer/users/people/LawerDetails.dart';
 import 'conversations/conversations.dart';
@@ -37,9 +38,26 @@ class _HomePeopleState extends State<HomePeople> {
   @override
   void initState() {
     getSharedData();
+    getData();
     super.initState();
   }
-
+  String selectedType;
+   final List<DropdownMenuItem> items = [];
+  getData() async{
+   var b = await fireStoreInstance
+        .collection("Lawertype")
+        .doc('Lawertype')
+        .get();
+    String string=b.data()['Lawertype'];
+   setState(() {
+     for (int i = 0; i < string.split(",").length; i++) {
+       items.add(DropdownMenuItem(
+         child: Text(string.split(",")[i]),
+         value: string.split(",")[i],
+       ));
+     }
+   });
+  }
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -50,7 +68,7 @@ class _HomePeopleState extends State<HomePeople> {
             onTap: (index) {},
             tabs: [
               Tab(icon: Text('Laws')),
-              Tab(icon: Text('Lawers')),
+              Tab(icon: Text('Lawyers')),
               Tab(icon: Text('Forum')),
             ],
           ),
@@ -116,73 +134,125 @@ class _HomePeopleState extends State<HomePeople> {
               "0",
               style: TextStyle(fontSize: 40),
             )),
-            lawers.length == 0
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: lawers.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        onTap: () {
-                          print(lawers[index]['email']);
-                          Get.to(LawerDetails(lawers[index]['email']));
-                        },
-                        title: Container(
-                          width: (MediaQuery.of(context).size.width / 3) * 1.7,
-                          child: Center(
-                            child: Row(
-                              children: [
-                                Image.network(
-                                  lawers[index]['profile']['picture'],
-                                  height: 90,
-                                  width: 90,
+            Column(
+              children: [
+                 Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 30,
+                  ),
+                  child: SearchableDropdown.single(
+                    displayClearIcon: false,
+                    items: items,
+                    value: 'Lawyer Service Type',
+                    hint: 'Lawyer Service Type',
+                    searchHint: "Search / Select one",
+                    onChanged: (value) {
+                      setState(() {
+                        selectedType=value;
+                      });
+                    },
+                    dialogBox: true,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return '*required';
+                      }
+                      return null;
+                    },
+                    isExpanded: true,
+                  ),
+                ),
+                lawers.length == 0
+                    ? Center(child: CircularProgressIndicator())
+                    : Expanded(
+                        flex: 1,
+                        child: ListView.builder(
+                            itemCount: lawers.length,
+                            itemBuilder: (BuildContext context, int index) {
+                             print(lawers.length);
+                         for(int i=0;i<lawers.length;i++){
+                             if(selectedType==lawers[index]['service']){
+ return ListTile(
+                                onTap: () {
+                                  print(lawers[index]['email']);
+                                  Get.to(LawerDetails(lawers[index]['email']));
+                                },
+                                title: Container(
+                                  width:
+                                      (MediaQuery.of(context).size.width / 3) *
+                                          1.7,
+                                  child: Center(
+                                    child: Row(
+                                      children: [
+                                        Image.network(
+                                          lawers[index]['profile']['picture'],
+                                          height: 90,
+                                          width: 90,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: AutoSizeText(
+                                                  lawers[index]['name'],
+                                                  minFontSize: 10,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontFamily: 'Gilroy',
+                                                  )),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: AutoSizeText(
+                                                  lawers[index]['email'],
+                                                  minFontSize: 10,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontFamily: 'Gilroy',
+                                                  )),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: AutoSizeText(
+                                                  lawers[index]['phn'],
+                                                  minFontSize: 10,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontFamily: 'Gilroy',
+                                                  )),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: AutoSizeText(lawers[index]['name'],
-                                          minFontSize: 10,
-                                          maxLines: 3,
-                                          overflow: TextOverflow.visible,
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontFamily: 'Gilroy',
-                                          )),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child:
-                                          AutoSizeText(lawers[index]['email'],
-                                              minFontSize: 10,
-                                              maxLines: 3,
-                                              overflow: TextOverflow.visible,
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: 'Gilroy',
-                                              )),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: AutoSizeText(lawers[index]['phn'],
-                                          minFontSize: 10,
-                                          maxLines: 3,
-                                          overflow: TextOverflow.visible,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontFamily: 'Gilroy',
-                                          )),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                              );
+                           
+                           }else{
+return Container();                             
+                           }
+                         }
+                           
+                            }),
+                      ),
+              ],
+            ),
             Forum()
           ],
         ),

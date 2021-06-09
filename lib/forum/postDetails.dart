@@ -1,17 +1,22 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawer/forum/forum.dart';
 import 'package:lawer/model/textformfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 
 class PostDetails extends StatefulWidget {
   final String posteremail;
   final String name;
   final String photoUrl;
   final String post;
-final String id;
+  final String id;
 
-  PostDetails(this.posteremail, this.name, this.photoUrl, this.post,this.id);
+  PostDetails(this.posteremail, this.name, this.photoUrl, this.post, this.id);
   @override
   _PostDetailsState createState() => _PostDetailsState();
 }
@@ -34,6 +39,10 @@ class _PostDetailsState extends State<PostDetails> {
     super.initState();
   }
 
+  Random _rnd = Random();
+
+  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
   final fireStoreInstance = FirebaseFirestore.instance;
   TextEditingController post = TextEditingController();
   final _loginForm = GlobalKey<FormState>();
@@ -41,15 +50,26 @@ class _PostDetailsState extends State<PostDetails> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar:
-        AppBar( backgroundColor: Colors.white,elevation:0,
-          leading:GestureDetector(onTap: () {
-
-        Get.back();
-      },child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Icon(Icons.arrow_back_ios,color: Colors.black,),
-      ),),title: Text('Comments',style: TextStyle(color: Colors.black),),),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: GestureDetector(
+            onTap: () {
+              Get.back();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          title: Text(
+            'Comments',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(children: [
@@ -57,22 +77,41 @@ class _PostDetailsState extends State<PostDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(widget.photoUrl),
-                      radius: 20,
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          widget.name,
-                          style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.bold),
-                        ),
-                        
-                      ],
-                    ),
+                    Row(children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(widget.photoUrl),
+                        radius: 20,
+                      ),
+                      Text(
+                        widget.name,
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
+                    ]),
+
+                   email==widget.posteremail? ElevatedButton(
+                        onPressed: () {
+                          fireStoreInstance
+                              .collection("Forum")
+                              .doc(widget.id)
+                              .delete()
+                              .then((_) {
+                            print("success!");
+                            fireStoreInstance
+                                .collection("Forum")
+                                .doc(widget.id)
+                                .collection('comments')
+                                .doc()
+                                .delete()
+                                .then((_) {});
+                            Get.back();
+                            Get.snackbar('Success', 'Post Deleted');
+                          });
+                        },
+                        child: Text('Delete')):Container()
                   ],
                 ),
                 Padding(
@@ -102,15 +141,17 @@ class _PostDetailsState extends State<PostDetails> {
                           ElevatedButton(
                               onPressed: () async {
                                 if (_loginForm.currentState.validate()) {
+                                  String idx2 = getRandomString(10);
                                   fireStoreInstance
                                       .collection("Forum")
                                       .doc(widget.id)
                                       .collection("comments")
-                                      .doc()
+                                      .doc(idx2)
                                       .set({
                                     'comment': post.text,
                                     'name': name,
                                     'email': email,
+                                    'count': idx2,
                                     'photoUrl': photoURL,
                                     'timestamp': FieldValue.serverTimestamp(),
                                   }, SetOptions(merge: true)).then((_) {
@@ -130,85 +171,107 @@ class _PostDetailsState extends State<PostDetails> {
                     ),
                   )
                 ])),
-         Expanded(
-            flex: 1,
-            child: StreamBuilder<QuerySnapshot>(
-              stream: fireStoreInstance
-                  .collection('Forum').doc(widget.id).collection('comments')
-                  .orderBy('timestamp')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.lightBlueAccent,
-                    ),
-                  );
-                }
-                // final messages = snapshot.data.docs.reversed;
-//  print(snapshot.data.docs[0]['comment']);
-                return ListView.builder(
-                  reverse: true,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (BuildContext context, int index) {
-                   
-                    return 
-                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                        
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      snapshot.data.docs[index]['photoUrl']),
-                                  radius: 20,
-                                ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      snapshot.data.docs[index]['name'],
-                                      style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    // Text(
-                                    //   //DateTime.fromMicrosecondsSinceEpoch(snapshot.data.docs[index]['timestamp'].seconds.)
-                                    //   snapshot.data.docs[index]['timestamp']
-                                    //       .now()
-                                    //       .toDate(),
-                                    //   style: TextStyle(
-                                    //       fontSize: 15,
-                                    //       fontWeight: FontWeight.bold),
-                                    // ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(snapshot.data.docs[index]['comment']),
-                            ),
-                            Divider(
-                              thickness: 5,
-                            )
-                          ],
-                        ),
+            Expanded(
+              flex: 1,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: fireStoreInstance
+                    .collection('Forum')
+                    .doc(widget.id)
+                    .collection('comments')
+                    .orderBy('timestamp')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.lightBlueAccent,
                       ),
                     );
-                  
-                  },
-                );
-              },
-            ),
-          )
-     
+                  }
+                  // final messages = snapshot.data.docs.reversed;
+//  print(snapshot.data.docs[0]['comment']);
+                  return ListView.builder(
+                    reverse: true,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                    itemCount: snapshot.data.docs.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(snapshot
+                                            .data.docs[index]['photoUrl']),
+                                        radius: 20,
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            snapshot.data.docs[index]['name'],
+                                            style: TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          // Text(
+                                          //   //DateTime.fromMicrosecondsSinceEpoch(snapshot.data.docs[index]['timestamp'].seconds.)
+                                          //   snapshot.data.docs[index]['timestamp']
+                                          //       .now()
+                                          //       .toDate(),
+                                          //   style: TextStyle(
+                                          //       fontSize: 15,
+                                          //       fontWeight: FontWeight.bold),
+                                          // ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+
+                                 email==snapshot
+                                     .data.docs[index]['email']? ElevatedButton(
+                                      onPressed: () {
+                                        fireStoreInstance
+                                            .collection("Forum")
+                                            .doc(widget.id)
+                                            .collection('comments')
+                                            .doc(snapshot.data.docs[index]
+                                                ['count'])
+                                            .delete()
+                                            .then((_) {});
+
+                                        Get.snackbar(
+                                            'Success', 'Comment Deleted');
+                                      },
+                                      child: Text('Delete')):Container()
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child:
+                                    Text(snapshot.data.docs[index]['comment']),
+                              ),
+                              Divider(
+                                thickness: 5,
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            )
           ]),
         ),
       ),

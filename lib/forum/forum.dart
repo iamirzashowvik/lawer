@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -12,7 +14,12 @@ class Forum extends StatefulWidget {
   @override
   _ForumState createState() => _ForumState();
 }
+const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 
+Random _rnd = Random();
+
+String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 class _ForumState extends State<Forum> {
   final _loginForm = GlobalKey<FormState>();
   TextEditingController post = TextEditingController();
@@ -53,15 +60,16 @@ class _ForumState extends State<Forum> {
                       children: [
                         ElevatedButton(
                             onPressed: () async {
+                              String idX=getRandomString(10);
                               if (_loginForm.currentState.validate()) {
                                 fireStoreInstance
                                     .collection("Forum")
-                                    .doc(listcount.toString())
+                                    .doc(idX)
                                     .set({
                                   'name': name, // John Doe
                                   'post': post.text, 'photoUrl': photoURL,
                                   'email': email,
-                                  'count':listcount,
+                                  'count':idX,
                                   'timestamp': FieldValue.serverTimestamp(),
                                 }, SetOptions(merge: true)).then((_) async {
                                   print("success!");

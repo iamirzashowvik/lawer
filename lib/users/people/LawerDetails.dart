@@ -123,7 +123,7 @@ class _LawerDetailsState extends State<LawerDetails> {
                                           //  print("invalid");
                                         }
                                       },
-                                      child: Text('Send Conversation Request')),
+                                      child: Text('Request for Appointment ')),
                                 ],
                               ),
                             ),

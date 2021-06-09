@@ -23,10 +23,10 @@ class _UserSelectionState extends State<UserSelection> {
             children: [
 
             ElevatedButton(onPressed: (){
- Get.to(SignInPeople());}, child: Text('Need a Lawer')),
+ Get.to(SignInPeople());}, child: Text('Need a Lawyer')),
             ElevatedButton(onPressed: (){
               Get.to(SignInLawer());
-            }, child: Text('Lawer')),
+            }, child: Text('As a Lawyer')),
           ],),
         ),
       ),
