@@ -58,6 +58,8 @@ class _ForumState extends State<Forum> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+
+
                         ElevatedButton(
                             onPressed: () async {
                               String idX=getRandomString(10);
