@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lawer/model/textformfield.dart';
 import 'package:lawer/users/people/SignInPeople.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wifi_info_plugin/wifi_info_plugin.dart';
 
 class SignUpPeople extends StatefulWidget {
   const SignUpPeople({Key key}) : super(key: key);
@@ -31,7 +33,7 @@ class _SignUpPeopleState extends State<SignUpPeople> {
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+        await googleUser.authentication;
 
     // Create a new credential
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
@@ -42,9 +44,35 @@ class _SignUpPeopleState extends State<SignUpPeople> {
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
+
   Future<void> signOutGoogle() async {
     await googleSignIn.signOut();
   }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getMac();
+  }
+
+  String macAddress;
+  bool authUser = true;
+  WifiInfoWrapper _wifiObject;
+  Future<void> getMac() async {
+    WifiInfoWrapper wifiObject;
+
+    try {
+      wifiObject = await WifiInfoPlugin.wifiDetails;
+
+      setState(() {
+        _wifiObject = wifiObject;
+        macAddress = _wifiObject.macAddress;
+      });
+    } on PlatformException {}
+    if (!mounted) return;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -64,7 +92,6 @@ class _SignUpPeopleState extends State<SignUpPeople> {
                   ),
                 ),
                 TFFxM(fullName, 'Full Name'),
-
                 TFFxM(password, 'Password'),
                 TFFxM(presentaddress, 'Present Address'),
                 TFFxM(phone, 'Phone Number'),
@@ -77,7 +104,6 @@ class _SignUpPeopleState extends State<SignUpPeople> {
                     onTap: () async {
                       if (_loginForm.currentState.validate()) {
                         EasyLoading.show(status: 'loading...');
-
 
                         // firestoreInstance
                         //     .collection("client")
@@ -113,31 +139,26 @@ class _SignUpPeopleState extends State<SignUpPeople> {
                                 'nid': nid.text,
                                 'PresentAddress': presentaddress.text,
                                 'email': result.user.email,
-                                'usertype':'client'
-                              }, SetOptions(
-                                  merge: true)).then((_) async {});
+                                'phoneid': macAddress,
+                                'usertype': 'client'
+                              }, SetOptions(merge: true)).then((_) async {});
                               SharedPreferences pref =
-                              await SharedPreferences.getInstance();
+                                  await SharedPreferences.getInstance();
                               pref.setString(
                                   'profilePHOTO', result.user.photoURL);
                               pref.setString('email', result.user.email);
-                              pref.setString(
-                                  'name', result.user.displayName);
-
+                              pref.setString('name', result.user.displayName);
 
                               EasyLoading.dismiss();
-                              Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: (_) => SignInPeople()));
-
-                            } catch (e) {
-
-                            }
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => SignInPeople()));
+                            } catch (e) {}
                           } else {
                             signOutGoogle();
                           }
                         });
-
-
                       } else {
                         //  print("invalid");
                       }

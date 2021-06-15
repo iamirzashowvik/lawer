@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lawer/model/textformfield.dart';
 import 'package:lawer/users/lawers/signin__lawer.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wifi_info_plugin/wifi_info_plugin.dart';
 
 class SignUpLawer extends StatefulWidget {
   const SignUpLawer({Key key}) : super(key: key);
@@ -16,7 +18,8 @@ class SignUpLawer extends StatefulWidget {
 }
 
 class _SignUpLawerState extends State<SignUpLawer> {
-  final List<DropdownMenuItem> items = [];  final _loginForm = GlobalKey<FormState>();
+  final List<DropdownMenuItem> items = [];
+  final _loginForm = GlobalKey<FormState>();
   final fireStoreInstance = FirebaseFirestore.instance;
   TextEditingController fullName = TextEditingController();
   TextEditingController presentaddress = TextEditingController();
@@ -30,21 +33,20 @@ class _SignUpLawerState extends State<SignUpLawer> {
   TextEditingController training = TextEditingController();
   TextEditingController certifications = TextEditingController();
   TextEditingController others = TextEditingController();
-  getData() async{
-   var b = await fireStoreInstance
-        .collection("Lawertype")
-        .doc('Lawertype')
-        .get();
-    String string=b.data()['Lawertype'];
-   setState(() {
-     for (int i = 0; i < string.split(",").length; i++) {
-       items.add(DropdownMenuItem(
-         child: Text(string.split(",")[i]),
-         value: string.split(",")[i],
-       ));
-     }
-   });
+  getData() async {
+    var b =
+        await fireStoreInstance.collection("Lawertype").doc('Lawertype').get();
+    String string = b.data()['Lawertype'];
+    setState(() {
+      for (int i = 0; i < string.split(",").length; i++) {
+        items.add(DropdownMenuItem(
+          child: Text(string.split(",")[i]),
+          value: string.split(",")[i],
+        ));
+      }
+    });
   }
+
   final GoogleSignIn googleSignIn = GoogleSignIn();
   Future<UserCredential> signInWithGoogleee() async {
     // Trigger the authentication flow
@@ -52,7 +54,7 @@ class _SignUpLawerState extends State<SignUpLawer> {
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+        await googleUser.authentication;
 
     // Create a new credential
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
@@ -63,14 +65,35 @@ class _SignUpLawerState extends State<SignUpLawer> {
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
+
   Future<void> signOutGoogle() async {
     await googleSignIn.signOut();
   }
+
   @override
   void initState() {
     getData();
     super.initState();
+    getMac();
   }
+
+  String macAddress;
+  bool authUser = true;
+  WifiInfoWrapper _wifiObject;
+  Future<void> getMac() async {
+    WifiInfoWrapper wifiObject;
+
+    try {
+      wifiObject = await WifiInfoPlugin.wifiDetails;
+
+      setState(() {
+        _wifiObject = wifiObject;
+        macAddress = _wifiObject.macAddress;
+      });
+    } on PlatformException {}
+    if (!mounted) return;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -82,7 +105,7 @@ class _SignUpLawerState extends State<SignUpLawer> {
               children: [
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Text(
                     'Hi there, Lets know a bit about you!',
                     style: TextStyle(
@@ -116,25 +139,22 @@ class _SignUpLawerState extends State<SignUpLawer> {
                     isExpanded: true,
                   ),
                 ),
-
-
                 TFFxM(password, 'Password'),
                 TFFxM(presentaddress, 'Office Address'),
-                TFFxM(phone, 'Phone Number'),TFFxM(nid, 'NID/Passport/Driving License Number'),
+                TFFxM(phone, 'Phone Number'),
+                TFFxM(nid, 'NID/Passport/Driving License Number'),
                 TFFxM(brNumber, 'Bar Registration Number'),
-              TFFxM(education, 'Educational Qualification'),
+                TFFxM(education, 'Educational Qualification'),
                 TFFxM(certifications, 'Certifications'),
                 TFFxM(training, 'Training Experience'),
                 TFFxM(others, 'Others Experience'),
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   child: GestureDetector(
                     onTap: () async {
                       if (_loginForm.currentState.validate()) {
                         EasyLoading.show(status: 'loading...');
-
-
 
                         signInWithGoogleee().then((result) async {
                           if (result != null) {
@@ -154,35 +174,31 @@ class _SignUpLawerState extends State<SignUpLawer> {
                                 'nid': nid.text,
                                 'OfficeAddress': presentaddress.text,
                                 'email': result.user.email,
-                                'barresnumber':brNumber.text,
-                                'education':education.text,
-                                'certifications':certifications.text,
-                                'trainig':training.text,
-                                'others':others.text,
-'usertype':'Lawer'
-                              }, SetOptions(
-                                  merge: true)).then((_) async {});
+                                'barresnumber': brNumber.text,
+                                'education': education.text,
+                                'certifications': certifications.text,
+                                'trainig': training.text,
+                                'others': others.text,
+                                'phoneid': macAddress,
+                                'usertype': 'Lawer'
+                              }, SetOptions(merge: true)).then((_) async {});
                               SharedPreferences pref =
-                              await SharedPreferences.getInstance();
+                                  await SharedPreferences.getInstance();
                               pref.setString(
                                   'profilePHOTO', result.user.photoURL);
                               pref.setString('email', result.user.email);
-                              pref.setString(
-                                  'name', result.user.displayName);
-
+                              pref.setString('name', result.user.displayName);
 
                               EasyLoading.dismiss();
-                              Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: (_) => SignInLawer()));
-
-                            } catch (e) {
-
-                            }
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => SignInLawer()));
+                            } catch (e) {}
                           } else {
                             signOutGoogle();
                           }
                         });
-
                       } else {
                         //  print("invalid");
                       }
@@ -198,7 +214,7 @@ class _SignUpLawerState extends State<SignUpLawer> {
                               spreadRadius: 2,
                               blurRadius: 3,
                               offset:
-                              Offset(0, 1), // changes position of shadow
+                                  Offset(0, 1), // changes position of shadow
                             ),
                           ],
                         ),

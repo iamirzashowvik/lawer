@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lawer/forgetpassword.dart';
 import 'package:lawer/model/textformfield.dart';
 import 'package:lawer/users/lawers/home__lawer.dart';
 import 'package:lawer/users/people/home__people.dart';
@@ -110,9 +111,21 @@ class _SignInPeopleState extends State<SignInPeople> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(onTap: (){Get.to(ForgetPassword('people'));},
+                        child: Text(
+                          'Forgot password',
+                          style: TextStyle(
+                              fontFamily: 'Gilroy',
+                              fontSize: 13,
+                              color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(onTap: (){Get.to(SignUpPeople());},
                                               child: Text(
-                          'Already have an account? Sign UP',
+                          'Sign UP',
                           style: TextStyle(
                               fontFamily: 'Gilroy',
                               fontSize: 13,

@@ -41,6 +41,7 @@ dependencies:
   firebase_storage: ^8.1.1
   image_picker: ^0.8.0+3
   path: ^1.8.0
+  wifi_info_plugin: ^1.1.5
 
 
 

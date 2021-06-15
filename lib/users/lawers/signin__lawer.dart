@@ -7,6 +7,7 @@ import 'package:lawer/users/people/home__people.dart';
 import 'package:lawer/users/people/signup__people.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../forgetpassword.dart';
 import 'home__lawer.dart';
 
 class SignInLawer extends StatefulWidget {
@@ -58,7 +59,7 @@ class _SignInLawerState extends State<SignInLawer> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
-                'Sign In',
+                'Sign In as Lawyer',
                 style: TextStyle(
                     fontSize: 30, fontFamily: 'Gilroy', color: Colors.blue),
               ),
@@ -104,7 +105,7 @@ class _SignInLawerState extends State<SignInLawer> {
                             padding: const EdgeInsets.all(8.0),
                             child: Center(
                               child: Text(
-                                'Sign In',
+                                'Sign In ',
                                 style: TextStyle(
                                     fontFamily: 'Gilroy',
                                     fontSize: 20,
@@ -117,9 +118,21 @@ class _SignInLawerState extends State<SignInLawer> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(onTap: (){Get.to(ForgetPassword('lawyer'));},
+                        child: Text(
+                          'Forgot password',
+                          style: TextStyle(
+                              fontFamily: 'Gilroy',
+                              fontSize: 13,
+                              color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(onTap: (){Get.to(SignUpLawer());},
                         child: Text(
-                          'Already have an account? Sign UP',
+                          'Sign UP',
                           style: TextStyle(
                               fontFamily: 'Gilroy',
                               fontSize: 13,
