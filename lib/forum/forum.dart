@@ -14,12 +14,14 @@ class Forum extends StatefulWidget {
   @override
   _ForumState createState() => _ForumState();
 }
+
 const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 
 Random _rnd = Random();
 
 String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
     length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
 class _ForumState extends State<Forum> {
   final _loginForm = GlobalKey<FormState>();
   TextEditingController post = TextEditingController();
@@ -31,6 +33,7 @@ class _ForumState extends State<Forum> {
       email = preferences.getString('email');
       name = preferences.getString('name');
       photoURL = preferences.getString('profilePHOTO');
+      print(photoURL);
     });
   }
 
@@ -58,11 +61,9 @@ class _ForumState extends State<Forum> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-
-
                         ElevatedButton(
                             onPressed: () async {
-                              String idX=getRandomString(10);
+                              String idX = getRandomString(10);
                               if (_loginForm.currentState.validate()) {
                                 fireStoreInstance
                                     .collection("Forum")
@@ -71,7 +72,7 @@ class _ForumState extends State<Forum> {
                                   'name': name, // John Doe
                                   'post': post.text, 'photoUrl': photoURL,
                                   'email': email,
-                                  'count':idX,
+                                  'count': idX,
                                   'timestamp': FieldValue.serverTimestamp(),
                                 }, SetOptions(merge: true)).then((_) async {
                                   print("success!");
@@ -114,59 +115,64 @@ class _ForumState extends State<Forum> {
                       EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (BuildContext context, int index) {
-                    listcount=snapshot.data.docs.length;
+                    listcount = snapshot.data.docs.length;
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ListTile(
                         onTap: () {
                           Get.to(PostDetails(
-                              snapshot.data.docs[index]['email'],
-                              snapshot.data.docs[index]['name'],
-                              snapshot.data.docs[index]['photoUrl'],
-                              snapshot.data.docs[index]['post'],
-                               snapshot.data.docs[index]['count'].toString(),
-                             ));
+                            snapshot.data.docs[index]['email'],
+                            snapshot.data.docs[index]['name'],
+                            snapshot.data.docs[index]['photoUrl'],
+                            snapshot.data.docs[index]['post'],
+                            snapshot.data.docs[index]['count'].toString(),
+                          ));
                         },
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      snapshot.data.docs[index]['photoUrl']),
-                                  radius: 20,
-                                ),
-                                Column(
-                                  children: [
-                                    Text(
+                        title: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white54,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 3,
+                                offset:
+                                    Offset(0, 1), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      backgroundImage: NetworkImage(snapshot
+                                          .data.docs[index]['photoUrl']),
+                                      radius: 20,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
                                       snapshot.data.docs[index]['name'],
                                       style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    // Text(
-                                    //   //DateTime.fromMicrosecondsSinceEpoch(snapshot.data.docs[index]['timestamp'].seconds.)
-                                    //   snapshot.data.docs[index]['timestamp']
-                                    //       .now()
-                                    //       .toDate(),
-                                    //   style: TextStyle(
-                                    //       fontSize: 15,
-                                    //       fontWeight: FontWeight.bold),
-                                    // ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(snapshot.data.docs[index]['post']),
-                            ),
-                            Divider(
-                              thickness: 5,
-                            )
-                          ],
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(snapshot.data.docs[index]['post']),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

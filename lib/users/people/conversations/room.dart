@@ -141,9 +141,13 @@ class _RoomState extends State<Room> {
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(widget.lawerphoto),
-                      // radius: 20,
+                      backgroundImage: NetworkImage(//widget.lawerphoto
+
+                          widget.lawerphoto.toString().substring(0, 3) == 'sca'
+                              ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/${widget.lawerphoto}?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
+                              : widget.lawerphoto),
                     ),
+                    // radius: 20,
                   ),
             Text(
               widget.lawername,

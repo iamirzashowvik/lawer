@@ -85,33 +85,37 @@ class _PostDetailsState extends State<PostDetails> {
                         backgroundImage: NetworkImage(widget.photoUrl),
                         radius: 20,
                       ),
-                      Text(
-                        widget.name,
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          widget.name,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ]),
-
-                   email==widget.posteremail? ElevatedButton(
-                        onPressed: () {
-                          fireStoreInstance
-                              .collection("Forum")
-                              .doc(widget.id)
-                              .delete()
-                              .then((_) {
-                            print("success!");
-                            fireStoreInstance
-                                .collection("Forum")
-                                .doc(widget.id)
-                                .collection('comments')
-                                .doc()
-                                .delete()
-                                .then((_) {});
-                            Get.back();
-                            Get.snackbar('Success', 'Post Deleted');
-                          });
-                        },
-                        child: Text('Delete')):Container()
+                    email == widget.posteremail
+                        ? ElevatedButton(
+                            onPressed: () {
+                              fireStoreInstance
+                                  .collection("Forum")
+                                  .doc(widget.id)
+                                  .delete()
+                                  .then((_) {
+                                print("success!");
+                                fireStoreInstance
+                                    .collection("Forum")
+                                    .doc(widget.id)
+                                    .collection('comments')
+                                    .doc()
+                                    .delete()
+                                    .then((_) {});
+                                Get.back();
+                                Get.snackbar('Success', 'Post Deleted');
+                              });
+                            },
+                            child: Text('Delete'))
+                        : Container()
                   ],
                 ),
                 Padding(
@@ -129,47 +133,42 @@ class _PostDetailsState extends State<PostDetails> {
             ),
             Form(
                 key: _loginForm,
-                child: Column(children: [
-                  TFFxM(post, 'Type your comment?'),
+                child: Row(children: [
+                  Expanded(
+                      flex: 1,
+                      // width: MediaQuery.of(context).size.width - 150,
+                      child: TFFxM(post, 'Type your comment?')),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () async {
-                                if (_loginForm.currentState.validate()) {
-                                  String idx2 = getRandomString(10);
-                                  fireStoreInstance
-                                      .collection("Forum")
-                                      .doc(widget.id)
-                                      .collection("comments")
-                                      .doc(idx2)
-                                      .set({
-                                    'comment': post.text,
-                                    'name': name,
-                                    'email': email,
-                                    'count': idx2,
-                                    'photoUrl': photoURL,
-                                    'timestamp': FieldValue.serverTimestamp(),
-                                  }, SetOptions(merge: true)).then((_) {
-                                    print('success');
-                                    Get.snackbar('Success', 'Comment Updated');
-                                  });
-                                  setState(() {
-                                    post.text = '';
-                                  });
-                                } else {
-                                  //  print("invalid");
-                                }
-                              },
-                              child: Icon(Icons.send)),
-                        ],
-                      ),
-                    ),
-                  )
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          if (_loginForm.currentState.validate()) {
+                            String idx2 = getRandomString(10);
+                            fireStoreInstance
+                                .collection("Forum")
+                                .doc(widget.id)
+                                .collection("comments")
+                                .doc(idx2)
+                                .set({
+                              'comment': post.text,
+                              'name': name,
+                              'email': email,
+                              'count': idx2,
+                              'photoUrl': photoURL,
+                              'timestamp': FieldValue.serverTimestamp(),
+                            }, SetOptions(merge: true)).then((_) {
+                              print('success');
+                              Get.snackbar('Success', 'Comment Updated');
+                            });
+                            setState(() {
+                              post.text = '';
+                            });
+                          } else {
+                            //  print("invalid");
+                          }
+                        },
+                        child: Icon(Icons.send)),
+                  ),
                 ])),
             Expanded(
               flex: 1,
@@ -192,53 +191,68 @@ class _PostDetailsState extends State<PostDetails> {
 //  print(snapshot.data.docs[0]['comment']);
                   return ListView.builder(
                     reverse: true,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                    // padding:
+                    //     EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
                     itemCount: snapshot.data.docs.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.symmetric(vertical: 4),
                         child: ListTile(
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundImage: NetworkImage(snapshot
-                                            .data.docs[index]['photoUrl']),
-                                        radius: 20,
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            snapshot.data.docs[index]['name'],
-                                            style: TextStyle(
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.bold),
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        snapshot.data.docs[index]['photoUrl']),
+                                    radius: 25,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      constraints:
+                                          BoxConstraints(maxWidth: 200),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white54,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5),
+                                            spreadRadius: 2,
+                                            blurRadius: 3,
+                                            offset: Offset(0,
+                                                1), // changes position of shadow
                                           ),
-                                          // Text(
-                                          //   //DateTime.fromMicrosecondsSinceEpoch(snapshot.data.docs[index]['timestamp'].seconds.)
-                                          //   snapshot.data.docs[index]['timestamp']
-                                          //       .now()
-                                          //       .toDate(),
-                                          //   style: TextStyle(
-                                          //       fontSize: 15,
-                                          //       fontWeight: FontWeight.bold),
-                                          // ),
                                         ],
                                       ),
-                                    ],
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              snapshot.data.docs[index]['name'],
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(snapshot
+                                                .data.docs[index]['comment']),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-
-                                 email==snapshot
-                                     .data.docs[index]['email']? ElevatedButton(
+                                ],
+                              ),
+                              email == snapshot.data.docs[index]['email']
+                                  ? ElevatedButton(
                                       onPressed: () {
                                         fireStoreInstance
                                             .collection("Forum")
@@ -252,17 +266,8 @@ class _PostDetailsState extends State<PostDetails> {
                                         Get.snackbar(
                                             'Success', 'Comment Deleted');
                                       },
-                                      child: Text('Delete')):Container()
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child:
-                                    Text(snapshot.data.docs[index]['comment']),
-                              ),
-                              Divider(
-                                thickness: 5,
-                              )
+                                      child: Icon(Icons.delete))
+                                  : Container()
                             ],
                           ),
                         ),

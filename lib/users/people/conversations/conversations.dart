@@ -38,24 +38,30 @@ class _ConversationsState extends State<Conversations> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading:GestureDetector(onTap: () {
-
-          Get.back();
-        },child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(Icons.arrow_back_ios,color: Colors.black,),
-        ),),
-        title: Row(mainAxisAlignment:MainAxisAlignment.start ,
+        leading: GestureDetector(
+          onTap: () {
+            Get.back();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             photoURL == null
                 ? CircularProgressIndicator()
                 : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(photoURL),
-                // radius: 20,
-              ),
-            ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(photoURL),
+                      // radius: 20,
+                    ),
+                  ),
             Text(
               'Chats',
               style: TextStyle(color: Colors.black),
@@ -79,7 +85,7 @@ class _ConversationsState extends State<Conversations> {
           // final messages = snapshot.data.docs.reversed;
 
           return ListView.builder(
-             reverse: true,
+            reverse: true,
             padding: EdgeInsets.all(8),
             itemCount: snapshot.data.docs.length,
             itemBuilder: (BuildContext context, int index) {
@@ -90,7 +96,10 @@ class _ConversationsState extends State<Conversations> {
                   child: ListTile(
                     onTap: () {
                       print('hi');
-                      Get.to(Room(snapshot.data.docs[index]['receiver_lawer'],snapshot.data.docs[index]['receiver_name'],snapshot.data.docs[index]['receiver_photo']));
+                      Get.to(Room(
+                          snapshot.data.docs[index]['receiver_lawer'],
+                          snapshot.data.docs[index]['receiver_name'],
+                          snapshot.data.docs[index]['receiver_photo']));
                     },
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +109,15 @@ class _ConversationsState extends State<Conversations> {
                           children: [
                             CircleAvatar(
                               backgroundImage: NetworkImage(
-                                  snapshot.data.docs[index]['receiver_photo']),
+                                  //  snapshot.data.docs[index]['receiver_photo']
+
+                                  snapshot.data.docs[index]['receiver_photo']
+                                              .toString()
+                                              .substring(0, 3) ==
+                                          'sca'
+                                      ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/${snapshot.data.docs[index]['receiver_photo']}?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
+                                      : snapshot.data.docs[index]
+                                          ['receiver_photo']),
                               radius: 20,
                             ),
                             Padding(
@@ -128,8 +145,7 @@ class _ConversationsState extends State<Conversations> {
                     ),
                   ),
                 );
-              }
-              else{
+              } else {
                 return Container();
               }
             },
