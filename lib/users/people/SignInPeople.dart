@@ -20,17 +20,17 @@ class _SignInPeopleState extends State<SignInPeople> {
   List<dynamic> userData = [];
 
   getUserData() {
-    var dataFF2;setState(() {
+    var dataFF2;
+    setState(() {
       userData = [];
     });
- firestoreInstance.collection("client").get().then((querySnapshot) {
+    firestoreInstance.collection("client").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         dataFF2 = result.data();
         setState(() {
           userData.add(dataFF2);
         });
       });
-     
     });
   }
 
@@ -38,7 +38,8 @@ class _SignInPeopleState extends State<SignInPeople> {
   void initState() {
     getUserData();
 
-    super.initState();getUserData();
+    super.initState();
+    getUserData();
   }
 
   final _loginForm = GlobalKey<FormState>();
@@ -80,11 +81,16 @@ class _SignInPeopleState extends State<SignInPeople> {
                                 pref.setString('email', _userName.text);
                                 pref.setString('name', userData[i]['name']);
                                 pref.setString('phn', userData[i]['phn']);
-                                pref.setString('PresentAddress', userData[i]['PresentAddress']);
+                                pref.setString('PresentAddress',
+                                    userData[i]['PresentAddress']);
                                 pref.setString('nid', userData[i]['nid']);
-                                pref.setString('profilePHOTO', userData[i]['profile']['picture']);
+                                pref.setString('profilePHOTO',
+                                    userData[i]['profile']['picture']);
                                 Get.offAll(HomePeople());
-                              } else {}
+                              } else {
+                                Get.snackbar('Wrong',
+                                    'Email/Password combination is wrong');
+                              }
                             }
                           }
                         },
@@ -111,7 +117,10 @@ class _SignInPeopleState extends State<SignInPeople> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(onTap: (){Get.to(ForgetPassword('people'));},
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(ForgetPassword('people'));
+                        },
                         child: Text(
                           'Forgot password',
                           style: TextStyle(
@@ -123,8 +132,11 @@ class _SignInPeopleState extends State<SignInPeople> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(onTap: (){Get.to(SignUpPeople());},
-                                              child: Text(
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(SignUpPeople());
+                        },
+                        child: Text(
                           'Sign UP',
                           style: TextStyle(
                               fontFamily: 'Gilroy',

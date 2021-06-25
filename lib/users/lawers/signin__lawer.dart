@@ -22,7 +22,8 @@ class _SignInLawerState extends State<SignInLawer> {
   List<dynamic> userData = [];
 
   getUserData() {
-    var dataFF2;setState(() {
+    var dataFF2;
+    setState(() {
       userData = [];
     });
     firestoreInstance.collection("Lawer").get().then((querySnapshot) {
@@ -33,15 +34,14 @@ class _SignInLawerState extends State<SignInLawer> {
           print(dataFF2);
         });
       });
-
     });
   }
 
   @override
   void initState() {
-
     getUserData();
-    super.initState(); getUserData();
+    super.initState();
+    getUserData();
   }
 
   final _loginForm = GlobalKey<FormState>();
@@ -74,7 +74,7 @@ class _SignInLawerState extends State<SignInLawer> {
                       child: GestureDetector(
                         onTap: () async {
                           SharedPreferences pref =
-                          await SharedPreferences.getInstance();
+                              await SharedPreferences.getInstance();
                           if (_loginForm.currentState.validate()) {
                             for (int i = 0; i < userData.length; i++) {
                               if (userData[i]['email'] == _userName.text &&
@@ -83,15 +83,20 @@ class _SignInLawerState extends State<SignInLawer> {
                                 pref.setString('email', _userName.text);
                                 pref.setString('name', userData[i]['name']);
                                 pref.setString('phn', userData[i]['phn']);
-                                pref.setString('PresentAddress', userData[i]['OfficeAddress']);
+                                pref.setString('PresentAddress',
+                                    userData[i]['OfficeAddress']);
                                 pref.setString('nid', userData[i]['nid']);
-                                pref.setString('profilePHOTO', userData[i]['profile']['picture']);
+                                pref.setString('profilePHOTO',
+                                    userData[i]['profile']['picture']);
                                 // Navigator.pushReplacement(
                                 //     context,
                                 //     MaterialPageRoute(
                                 //         builder: (_) => HomeLawer()));
                                 Get.offAll(HomeLawer());
-                              } else {}
+                              } else {
+                                Get.snackbar('Wrong',
+                                    'Email/Password combination is wrong');
+                              }
                             }
                           }
                         },
@@ -118,7 +123,10 @@ class _SignInLawerState extends State<SignInLawer> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(onTap: (){Get.to(ForgetPassword('lawyer'));},
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(ForgetPassword('lawyer'));
+                        },
                         child: Text(
                           'Forgot password',
                           style: TextStyle(
@@ -130,7 +138,10 @@ class _SignInLawerState extends State<SignInLawer> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(onTap: (){Get.to(SignUpLawer());},
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(SignUpLawer());
+                        },
                         child: Text(
                           'Sign UP',
                           style: TextStyle(

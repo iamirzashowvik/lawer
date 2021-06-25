@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lawer/model/textformfield.dart';
 import 'package:lawer/users/people/SignInPeople.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wifi_info_plugin/wifi_info_plugin.dart';
 
@@ -18,10 +19,35 @@ class SignUpPeople extends StatefulWidget {
 
 class _SignUpPeopleState extends State<SignUpPeople> {
   final _loginForm = GlobalKey<FormState>();
+  String _selectedLocation = 'Please choose a type';
+  final List<DropdownMenuItem> itemsX = [
+    DropdownMenuItem(
+      child: Text(
+        'NID',
+        //   'Passport', 'Driving License Number'
+      ),
+      value: 'NID',
+    ),
+    DropdownMenuItem(
+      child: Text(
+        'Passport',
+        //   'Passport', 'Driving License Number'
+      ),
+      value: 'Passport',
+    ),
+    DropdownMenuItem(
+      child: Text('Driving License Number'
+          //   'Passport', 'Driving License Number'
+          ),
+      value: 'Driving License Number',
+    ),
+  ];
+
   TextEditingController fullName = TextEditingController();
   TextEditingController presentaddress = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
+  bool selectedid = false;
   TextEditingController phone = TextEditingController();
   TextEditingController needs = TextEditingController();
   TextEditingController nid = TextEditingController();
@@ -92,11 +118,40 @@ class _SignUpPeopleState extends State<SignUpPeople> {
                   ),
                 ),
                 TFFxM(fullName, 'Full Name'),
+                TFFxM(email, 'Email'),
                 TFFxM(password, 'Password'),
                 TFFxM(presentaddress, 'Present Address'),
                 TFFxM(phone, 'Phone Number'),
                 TFFxM(needs, 'What Solution I\'m looking for in 100 words?'),
-                TFFxM(nid, 'NID/Passport/Driving License Number'),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 30,
+                  ),
+                  child: SearchableDropdown.single(
+                    displayClearIcon: false,
+                    items: itemsX,
+                    value: 'NID/Passport/Driving License Number',
+                    hint: 'NID/Passport/Driving License Number',
+                    searchHint: "Search / Select one",
+                    onChanged: (value) {
+                      setState(() {
+                        selectedid = true;
+                        // needs.text = value;
+                        //  print(needs.text.toString());
+                        _selectedLocation = value;
+                      });
+                    },
+                    dialogBox: true,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return '*required';
+                      }
+                      return null;
+                    },
+                    isExpanded: true,
+                  ),
+                ),
+                selectedid ? TFFxM(nid, _selectedLocation) : Container(),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

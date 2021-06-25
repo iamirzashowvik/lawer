@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,28 @@ class SignUpLawer extends StatefulWidget {
 
 class _SignUpLawerState extends State<SignUpLawer> {
   final List<DropdownMenuItem> items = [];
+  final List<DropdownMenuItem> itemsX = [
+    DropdownMenuItem(
+      child: Text(
+        'NID',
+        //   'Passport', 'Driving License Number'
+      ),
+      value: 'NID',
+    ),
+    DropdownMenuItem(
+      child: Text(
+        'Passport',
+        //   'Passport', 'Driving License Number'
+      ),
+      value: 'Passport',
+    ),
+    DropdownMenuItem(
+      child: Text('Driving License Number'
+          //   'Passport', 'Driving License Number'
+          ),
+      value: 'Driving License Number',
+    ),
+  ];
   final _loginForm = GlobalKey<FormState>();
   final fireStoreInstance = FirebaseFirestore.instance;
   TextEditingController fullName = TextEditingController();
@@ -77,6 +101,7 @@ class _SignUpLawerState extends State<SignUpLawer> {
     getMac();
   }
 
+  bool selectedid = false;
   String macAddress;
   bool authUser = true;
   WifiInfoWrapper _wifiObject;
@@ -94,6 +119,8 @@ class _SignUpLawerState extends State<SignUpLawer> {
     if (!mounted) return;
   }
 
+  List<String> _locations = ['A', 'B', 'C', 'D'];
+  String _selectedLocation = 'Please choose a type';
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -113,6 +140,7 @@ class _SignUpLawerState extends State<SignUpLawer> {
                   ),
                 ),
                 TFFxM(fullName, 'Full Name'),
+                TFFxM(email, 'Email'),
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: 30,
@@ -142,7 +170,54 @@ class _SignUpLawerState extends State<SignUpLawer> {
                 TFFxM(password, 'Password'),
                 TFFxM(presentaddress, 'Office Address'),
                 TFFxM(phone, 'Phone Number'),
-                TFFxM(nid, 'NID/Passport/Driving License Number'),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 30,
+                  ),
+                  child: SearchableDropdown.single(
+                    displayClearIcon: false,
+                    items: itemsX,
+                    value: 'NID/Passport/Driving License Number',
+                    hint: 'NID/Passport/Driving License Number',
+                    searchHint: "Search / Select one",
+                    onChanged: (value) {
+                      setState(() {
+                        selectedid = true;
+                        // needs.text = value;
+                        //  print(needs.text.toString());
+                        _selectedLocation = value;
+                      });
+                    },
+                    dialogBox: true,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return '*required';
+                      }
+                      return null;
+                    },
+                    isExpanded: true,
+                  ),
+                ),
+
+                // DropdownButton<String>(
+                //   hint: Text('NID/Passport/Driving License Number'),
+                //   items: <String>['NID', 'Passport', 'Driving License Number']
+                //       .map((String value) {
+                //     return DropdownMenuItem<String>(
+                //       value: value,
+                //       child: new Text(
+                //         value,
+                //         style: TextStyle(color: Colors.black),
+                //       ),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     setState(() {
+                //       _selectedLocation = value;
+                //     });
+                //   },
+                // ),
+                selectedid ? TFFxM(nid, _selectedLocation) : Container(),
                 TFFxM(brNumber, 'Bar Registration Number'),
                 TFFxM(education, 'Educational Qualification'),
                 TFFxM(certifications, 'Certifications'),

@@ -27,22 +27,27 @@ class _LawerDetailsState extends State<LawerDetails> {
     });
     print(item['name']);
   }
+
   final _loginForm = GlobalKey<FormState>();
   @override
   void initState() {
-    getLawerData();getSharedData();
+    getLawerData();
+    getSharedData();
     // TODO: implement initState
     super.initState();
   }
+
   TextEditingController post = TextEditingController();
   final fireStoreInstance = FirebaseFirestore.instance;
-  String email, name, photoURL;
+  String email, name, photoURL, threadId;
   getSharedData() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
       email = preferences.getString('email');
       name = preferences.getString('name');
       photoURL = preferences.getString('profilePHOTO');
+      threadId = item['email'].toString().split('@')[0] +
+          email.toString().split('@')[0];
     });
   }
 
@@ -51,89 +56,122 @@ class _LawerDetailsState extends State<LawerDetails> {
     return res == null
         ? Scaffold(body: Center(child: CircularProgressIndicator()))
         : SafeArea(
-          child: Scaffold(
-            body: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(item['profile']['picture']),
-                      radius: MediaQuery.of(context).size.width / 4,
-                    ),
-                    Text(
-                      item == null ? '' : item['name'],
-                      style: TextStyle(fontSize: 30),
-                    ),Text(
-                      item == null ? '' : item['email'],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      item == null ? '' : item['service'],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      item == null ? '' : item['education'],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      item == null ? '' : 'Bar Registration Number : ${item['barresnumber']}',
-                      style: TextStyle(fontSize: 20),
-                    ),Text(
-                      item == null ? '' : 'Office Address : ${item['OfficeAddress']}',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Form(
-                        key: _loginForm,
-                        child: Column(children: [
-                          TFFxM(post, 'What\'s On Your Mind?'),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  ElevatedButton(
-                                      onPressed: () async {
-                                        String x=item['email'].toString().split('@')[0]+email.toString().split('@')[0];
-                                        if (_loginForm.currentState.validate()) {
-                                          fireStoreInstance
-                                              .collection("Conversations")
-                                              .doc(x)
-                                              .set({
-                                            'sender_client': email, // John Doe
-                                            'message': post.text,
-                                           'threadId':x,
-                                            'receiver_lawer': item['email'],
-                                          'receiver_photo':item['profile']['picture'],
-                                            'receiver_name':item['name'],
-'sender_name':name,
-                                            'sender_photo':photoURL,
-                                            'timestamp': FieldValue.serverTimestamp(),
-                                          }, SetOptions(merge: true)).then((_) async {
-                                            print("success!");
-                                          });
-                                          setState(() {
-                                            post.text = '';
-                                          });
+            child: Scaffold(
+              body: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage:
+                            NetworkImage(item['profile']['picture']),
+                        radius: MediaQuery.of(context).size.width / 4,
+                      ),
+                      Text(
+                        item == null ? '' : item['name'],
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      Text(
+                        item == null ? '' : item['email'],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        item == null ? '' : item['service'],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        item == null ? '' : item['education'],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        item == null
+                            ? ''
+                            : 'Bar Registration Number : ${item['barresnumber']}',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        item == null
+                            ? ''
+                            : 'Office Address : ${item['OfficeAddress']}',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Form(
+                          key: _loginForm,
+                          child: Column(children: [
+                            TFFxM(post, 'What\'s On Your Mind?'),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          String x = item['email']
+                                                  .toString()
+                                                  .split('@')[0] +
+                                              email.toString().split('@')[0];
+                                          if (_loginForm.currentState
+                                              .validate()) {
+                                            fireStoreInstance
+                                                .collection("Conversations")
+                                                .doc(x)
+                                                .set({
+                                              'sender_client':
+                                                  email, // John Doe
+                                              'message': post.text,
+                                              'threadId': x,
+                                              'receiver_lawer': item['email'],
+                                              'receiver_photo': item['profile']
+                                                  ['picture'],
+                                              'receiver_name': item['name'],
+                                              'sender_name': name,
+                                              'sender_photo': photoURL,
+                                              'timestamp':
+                                                  FieldValue.serverTimestamp(),
+                                            }, SetOptions(merge: true)).then(
+                                                    (_) async {
+                                              fireStoreInstance
+                                                  .collection("Conversations")
+                                                  .doc(x)
+                                                  .collection('messages')
+                                                  .doc()
+                                                  .set({
+                                                'message': post.text,
+                                                'url': 'url nai',
+                                                'user': 'client',
+                                                'timestamp': FieldValue
+                                                    .serverTimestamp(),
+                                              }, SetOptions(merge: true)).then(
+                                                      (_) {
+                                                print('success22');
+                                              });
+                                              setState(() {
+                                                post.text = '';
+                                              });
+                                              print("success!");
+                                            });
 
-                                          Get.snackbar('Success', 'Request Sent');
-                                        } else {
-                                          //  print("invalid");
-                                        }
-                                      },
-                                      child: Text('Request for Appointment ')),
-                                ],
+                                            Get.snackbar(
+                                                'Success', 'Request Sent');
+                                          } else {
+                                            //  print("invalid");
+                                          }
+                                        },
+                                        child:
+                                            Text('Request for Appointment ')),
+                                  ],
+                                ),
                               ),
-                            ),
-                          )
-                        ])),
-                  ],
+                            )
+                          ])),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
   }
 }
