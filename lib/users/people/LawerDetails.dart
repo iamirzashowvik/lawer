@@ -58,8 +58,11 @@ class _LawerDetailsState extends State<LawerDetails> {
         ? Scaffold(body: Center(child: CircularProgressIndicator()))
         : SafeArea(
             child: Scaffold(
-              body: Center(
-                child: SingleChildScrollView(
+              body: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height - 60,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -81,17 +84,41 @@ class _LawerDetailsState extends State<LawerDetails> {
                         item == null ? '' : item['name'],
                         style: TextStyle(fontSize: 30),
                       ),
-                      Text(
-                        item == null ? '' : item['email'],
-                        style: TextStyle(fontSize: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Icon(Icons.email),
+                          Text(
+                            item == null ? '' : item['email'],
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
                       ),
-                      Text(
-                        item == null ? '' : item['service'],
-                        style: TextStyle(fontSize: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            'Lawyer Type',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            item == null ? '' : item['service'],
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
                       ),
-                      Text(
-                        item == null ? '' : item['education'],
-                        style: TextStyle(fontSize: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            'Education',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            item == null ? '' : item['education'],
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
                       ),
                       Text(
                         item == null

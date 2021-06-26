@@ -58,9 +58,14 @@ class _ConversationsState extends State<Conversations> {
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(photoURL),
-                      // radius: 20,
+                      backgroundImage: NetworkImage(photoURL
+                                  .toString()
+                                  .substring(0, 3) ==
+                              'sca'
+                          ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/$photoURL?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
+                          : photoURL),
                     ),
+                    // radius: 20,
                   ),
             Text(
               'Chats',

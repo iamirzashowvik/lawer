@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:lawer/forum/forum.dart';
@@ -64,12 +65,13 @@ class _HomePeopleState extends State<HomePeople> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.red,
           bottom: TabBar(
             onTap: (index) {},
             tabs: [
-              Tab(icon: Text('Laws')),
-              Tab(icon: Text('Lawyers')),
               Tab(icon: Text('Forum')),
+              Tab(icon: Text('Lawyers')),
+              Tab(icon: Text('Laws')),
             ],
           ),
           actions: [
@@ -86,12 +88,13 @@ class _HomePeopleState extends State<HomePeople> {
               ),
             ),
           ],
-          title: Text(name),
+          title: Text('BD Law'),
         ),
         drawer: Drawer(
           child: Column(
             children: [
               DrawerHeader(),
+              Text(name),
               ListTile(
                 onTap: () {
                   Get.to(Profile());
@@ -129,11 +132,7 @@ class _HomePeopleState extends State<HomePeople> {
         ),
         body: TabBarView(
           children: [
-            Center(
-                child: Text(
-              "0",
-              style: TextStyle(fontSize: 40),
-            )),
+            Forum(),
             Column(
               children: [
                 Padding(
@@ -178,77 +177,99 @@ class _HomePeopleState extends State<HomePeople> {
                                           LawerDetails(lawers[index]['email']));
                                     },
                                     title: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5),
+                                            spreadRadius: 2,
+                                            blurRadius: 3,
+                                            offset: Offset(0,
+                                                1), // changes position of shadow
+                                          ),
+                                        ],
+                                      ),
                                       width:
                                           (MediaQuery.of(context).size.width /
                                                   3) *
                                               1.7,
                                       child: Center(
-                                        child: Row(
-                                          children: [
-                                            Image.network(
-                                              // lawers[index]['profile']['picture']
-                                              lawers[index]['profile']
-                                                              ['picture']
-                                                          .toString()
-                                                          .substring(0, 3) ==
-                                                      'sca'
-                                                  ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/${lawers[index]['profile']['picture']}?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
-                                                  : lawers[index]['profile']
-                                                      ['picture'],
-                                              height: 90,
-                                              width: 90,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: AutoSizeText(
-                                                      lawers[index]['name'],
-                                                      minFontSize: 10,
-                                                      maxLines: 3,
-                                                      overflow:
-                                                          TextOverflow.visible,
-                                                      style: TextStyle(
-                                                        fontSize: 20,
-                                                        fontFamily: 'Gilroy',
-                                                      )),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 45,
+                                                backgroundImage: NetworkImage(
+                                                  // lawers[index]['profile']['picture']
+                                                  lawers[index]['profile']
+                                                                  ['picture']
+                                                              .toString()
+                                                              .substring(
+                                                                  0, 3) ==
+                                                          'sca'
+                                                      ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/${lawers[index]['profile']['picture']}?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
+                                                      : lawers[index]['profile']
+                                                          ['picture'],
                                                 ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: AutoSizeText(
-                                                      lawers[index]['email'],
-                                                      minFontSize: 10,
-                                                      maxLines: 3,
-                                                      overflow:
-                                                          TextOverflow.visible,
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontFamily: 'Gilroy',
-                                                      )),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: AutoSizeText(
-                                                      lawers[index]['phn'],
-                                                      minFontSize: 10,
-                                                      maxLines: 3,
-                                                      overflow:
-                                                          TextOverflow.visible,
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontFamily: 'Gilroy',
-                                                      )),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: AutoSizeText(
+                                                        lawers[index]['name'],
+                                                        minFontSize: 10,
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow
+                                                            .visible,
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          fontFamily: 'Gilroy',
+                                                        )),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: AutoSizeText(
+                                                        lawers[index]['email'],
+                                                        minFontSize: 10,
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow
+                                                            .visible,
+                                                        style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontFamily: 'Gilroy',
+                                                        )),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: AutoSizeText(
+                                                        lawers[index]['phn'],
+                                                        minFontSize: 10,
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow
+                                                            .visible,
+                                                        style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontFamily: 'Gilroy',
+                                                        )),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -261,7 +282,11 @@ class _HomePeopleState extends State<HomePeople> {
                       ),
               ],
             ),
-            Forum()
+            Center(
+                child: Text(
+              "0",
+              style: TextStyle(fontSize: 40),
+            )),
           ],
         ),
       ),
