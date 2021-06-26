@@ -93,7 +93,12 @@ class _HomePeopleState extends State<HomePeople> {
         drawer: Drawer(
           child: Column(
             children: [
-              DrawerHeader(),
+              DrawerHeader(
+                child: CircleAvatar(
+                    radius: 100,
+                    backgroundImage: AssetImage(
+                        'assets/justice-concept-illustration_114360-2134.jpg')),
+              ),
               Text(name),
               ListTile(
                 onTap: () {

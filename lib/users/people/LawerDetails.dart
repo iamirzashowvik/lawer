@@ -67,17 +67,12 @@ class _LawerDetailsState extends State<LawerDetails> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       CircleAvatar(
-                        backgroundImage: NetworkImage(
-
-                            //item['profile']['picture']
-                            //
-                            //
-                            item['profile']['picture']
-                                        .toString()
-                                        .substring(0, 3) ==
-                                    'sca'
-                                ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/${item['profile']['picture']}?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
-                                : item['profile']['picture']),
+                        backgroundImage: NetworkImage(item['profile']['picture']
+                                    .toString()
+                                    .substring(0, 3) ==
+                                'sca'
+                            ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/${item['profile']['picture']}?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
+                            : item['profile']['picture']),
                         radius: MediaQuery.of(context).size.width / 4,
                       ),
                       Text(

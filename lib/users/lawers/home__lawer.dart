@@ -14,15 +14,14 @@ class HomeLawer extends StatefulWidget {
 }
 
 class _HomeLawerState extends State<HomeLawer> {
-  String name='UserName';
-  getSharedData()async{
-
-    SharedPreferences preferences=await SharedPreferences.getInstance();
+  String name = 'UserName';
+  getSharedData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
-      name=preferences.getString('name');
+      name = preferences.getString('name');
     });
-
   }
+
   @override
   void initState() {
     getSharedData();
@@ -35,24 +34,27 @@ class _HomeLawerState extends State<HomeLawer> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.red,
           bottom: TabBar(
-            onTap: (index) {
-
-            },
+            onTap: (index) {},
             tabs: [
-              Tab(icon: Text('Laws')),
-              Tab(icon: Text('Chats')),
               Tab(icon: Text('Forum')),
+              Tab(icon: Text('Chats')),
+              Tab(icon: Text('Laws')),
             ],
-          ),actions: [
-
-        ],
-          title: Text(name),
+          ),
+          actions: [],
+          title: Text('BD Law'),
         ),
         drawer: Drawer(
           child: Column(
             children: [
-              DrawerHeader(),
+              DrawerHeader(
+                child: CircleAvatar(
+                    radius: 100,
+                    backgroundImage: AssetImage(
+                        'assets/justice-concept-illustration_114360-2134.jpg')),
+              ),
               ListTile(
                 onTap: () {
                   Get.to(ProfileLawer());
@@ -70,7 +72,7 @@ class _HomeLawerState extends State<HomeLawer> {
               ListTile(
                 onTap: () async {
                   SharedPreferences preference =
-                  await SharedPreferences.getInstance();
+                      await SharedPreferences.getInstance();
                   preference.setBool('isLogInPeople', false);
                   preference.setBool('isLogInLawer', false);
                   Get.offAll(UserSelection());
@@ -90,15 +92,16 @@ class _HomeLawerState extends State<HomeLawer> {
         ),
         body: TabBarView(
           children: [
+            Forum(),
+            Conv_lawer(),
             Center(
                 child: Text(
-                  "0",
-                  style: TextStyle(fontSize: 40),
-                )),
-            Conv_lawer(),
-           Forum()
+              "0",
+              style: TextStyle(fontSize: 40),
+            )),
           ],
         ),
       ),
     );
-  }}
+  }
+}

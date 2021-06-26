@@ -40,12 +40,17 @@ class _Conv_lawerState extends State<Conv_lawer> {
         leading: photoURL == null
             ? CircularProgressIndicator()
             : Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(photoURL),
-            // radius: 20,
-          ),
-        ),
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(photoURL
+                              .toString()
+                              .substring(0, 3) ==
+                          'sca'
+                      ? 'https://firebasestorage.googleapis.com/v0/b/lawer-8613e.appspot.com/o/$photoURL?alt=media&token=260e6756-d21b-43a6-9391-2270ff39f3f2'
+                      : photoURL),
+                  // radius: 20,
+                ),
+              ),
         title: Text(
           'Chats',
           style: TextStyle(color: Colors.black),
@@ -78,7 +83,10 @@ class _Conv_lawerState extends State<Conv_lawer> {
                   child: ListTile(
                     onTap: () {
                       print('hi');
-                      Get.to(Room_lawer(snapshot.data.docs[index]['sender_client'], snapshot.data.docs[index]['sender_name'], snapshot.data.docs[index]['sender_photo']));
+                      Get.to(Room_lawer(
+                          snapshot.data.docs[index]['sender_client'],
+                          snapshot.data.docs[index]['sender_name'],
+                          snapshot.data.docs[index]['sender_photo']));
                     },
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,8 +124,7 @@ class _Conv_lawerState extends State<Conv_lawer> {
                     ),
                   ),
                 );
-              }
-              else{
+              } else {
                 return Container();
               }
             },

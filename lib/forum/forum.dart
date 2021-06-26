@@ -52,8 +52,11 @@ class _ForumState extends State<Forum> {
         children: [
           Form(
               key: _loginForm,
-              child: Column(children: [
-                TFFxM(post, 'What\'s On Your Mind?'),
+              child: Row(children: [
+                Container(
+                  child: TFFxM(post, 'What\'s On Your Mind?'),
+                  width: 250,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Padding(
